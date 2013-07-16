@@ -6,11 +6,11 @@ module Flip
       "Uses cookies to apply only to your session."
     end
 
-    def knows? definition
+    def knows?(definition, options = {})
       cookies.key? cookie_name(definition)
     end
 
-    def on? definition
+    def on?(definition, options = {})
       cookies[cookie_name(definition)] === "true"
     end
 

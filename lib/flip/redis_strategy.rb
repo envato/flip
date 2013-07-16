@@ -12,11 +12,11 @@ module Flip
       "Redis backed, applies to all users."
     end
 
-    def knows? definition
+    def knows?(definition, options = {})
       !feature(definition).nil?
     end
 
-    def on? definition
+    def on?(definition, options = {})
       feature(definition) == true.to_s
     end
 

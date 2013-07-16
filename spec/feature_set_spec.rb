@@ -1,12 +1,12 @@
 require "spec_helper"
 
 class NullStrategy < Flip::AbstractStrategy
-  def knows?(d); false; end
+  def knows?(d, options = {}); false; end
 end
 
 class TrueStrategy < Flip::AbstractStrategy
-  def knows?(d); true; end
-  def on?(d); true; end
+  def knows?(d, options = {}); true; end
+  def on?(d, options = {}); true; end
 end
 
 describe Flip::FeatureSet do
