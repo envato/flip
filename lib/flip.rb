@@ -20,6 +20,7 @@
   forbidden
   redis_strategy
   username_strategy
+  deterministic_percentage_strategy
 }.each { |name| require "flip/#{name}" }
 
 require "flip/engine" if defined?(Rails)
