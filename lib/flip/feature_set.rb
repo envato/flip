@@ -20,9 +20,9 @@ module Flip
     end
 
     # Whether the given feature is switched on.
-    def on? key
+    def on?(key, options = {})
       d = @definitions[key]
-      @strategies.each_value { |s| return s.on?(d) if s.knows?(d) }
+      @strategies.each_value { |s| return s.on?(d, options) if s.knows?(d, options) }
       default_for d
     end
 
