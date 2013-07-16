@@ -6,11 +6,11 @@ module Flip
       "Uses Rails session to apply only to your session."
     end
 
-    def knows? definition
+    def knows?(definition, options = {})
       session.key? session_key_name(definition)
     end
 
-    def on? definition
+    def on?(definition, options = {})
       session[session_key_name(definition)] === "true"
     end
 
