@@ -1,10 +1,9 @@
-# Database backed system-wide
 module Flip
   class DeterministicPercentageStrategy < AbstractStrategy
 
-    KEY_SUFFIX = '_percent'
+    KEY_SUFFIX = '_deterministicpercent'
 
-    def initialize(data_store)
+    def initialize(data_store = Flip::RedisStore.new)
       @data_store = data_store
     end
 

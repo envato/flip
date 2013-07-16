@@ -1,10 +1,9 @@
-# Database backed system-wide
 module Flip
   class UsernameStrategy < AbstractStrategy
 
     KEY_SUFFIX = '_username'
 
-    def initialize(data_store)
+    def initialize(data_store = Flip::RedisStore.new)
       @data_store = data_store
     end
 
