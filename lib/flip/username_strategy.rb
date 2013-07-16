@@ -16,6 +16,18 @@ module Flip
       !feature(definition.key.to_s).nil?
     end
 
+    def get(definition)
+      @data_store.get(definition.key.to_s + key + KEY_SUFFIX)
+    end
+
+    def set(definition, value)
+      @data_store.set(definition.key.to_s + key + KEY_SUFFIX, value)
+    end
+
+    def valid_options
+      return ['usernames']
+    end
+
     #
     # expecting { :username => 'something' }
     #
