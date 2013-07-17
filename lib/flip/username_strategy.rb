@@ -16,11 +16,11 @@ module Flip
     end
 
     def get(definition)
-      @data_store.get(definition.key.to_s + key + KEY_SUFFIX)
+      @data_store.get(definition.key.to_s + KEY_SUFFIX)
     end
 
     def set(definition, value)
-      @data_store.set(definition.key.to_s + key + KEY_SUFFIX, value)
+      @data_store.set(definition.key.to_s + KEY_SUFFIX, value)
     end
 
     def valid_options
