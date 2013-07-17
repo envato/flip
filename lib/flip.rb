@@ -8,20 +8,24 @@
 
 # Flip files.
 %w{
-  abstract_strategy
   controller_filters
-  cookie_strategy
-  database_strategy
   declarable
-  declaration_strategy
   definition
-  deterministic_percentage_strategy
   facade
   feature_set
   forbidden
+  
+  abstract_strategy
+  cookie_strategy
+  database_strategy
+  declaration_strategy
   redis_strategy
   session_strategy
   username_strategy
+  deterministic_percentage_strategy
+
+  abstract_store
+  redis_store
 }.each { |name| require "flip/#{name}" }
 
 require "flip/engine" if defined?(Rails)
