@@ -8,6 +8,7 @@
 
 # Flip files.
 %w{
+  strategy_persistence
   abstract_store
   abstract_strategy
   controller_filters
@@ -24,7 +25,6 @@
   redis_store
   redis_strategy
   session_strategy
-  strategy_persistence
   username_strategy
 }.each { |name| require "flip/#{name}" }
 

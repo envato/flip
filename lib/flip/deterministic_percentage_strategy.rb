@@ -1,26 +1,13 @@
 module Flip
   class DeterministicPercentageStrategy < AbstractStrategy
-
-    KEY_SUFFIX = '_deterministicpercent'
-
-    def initialize(data_store = Flip::RedisStore.new)
-      @data_store = data_store
-    end
+    include StrategyPersistence
 
     def description
-      "Not persisted, applies to single user."
+      "Enable feature for a deterministic percent of users"
     end
 
     def knows?(definition, options = {})
-      !feature(definition.key.to_s).nil?
-    end
-
-    def get(definition)
-      @data_store.get(definition.key.to_s + KEY_SUFFIX)
-    end
-
-    def set(definition, value)
-      @data_store.set(definition.key.to_s + KEY_SUFFIX, value)
+      options[:id] && !percentage(definition).nil?
     end
 
     def valid_options
@@ -31,25 +18,18 @@ module Flip
     # expecting { :id => n }
     #
     def on?(definition, options = {})
-      if options[:id].nil?
-        false
-      else
-        within_percentage?(definition.key.to_s, options[:id])
-      end
+      within_percentage(definition, options[:id])
     end
 
     private
 
-    def feature(key)
-      @data_store.get(key + KEY_SUFFIX)
+    def within_percentage?(definition, id)
+      (id % 100) < percentage(definition)
     end
 
-    def within_percentage?(key, id)
-      (id % 100) < percentage(key)
-    end
-
-    def percentage(key)
-      @data_store.get(key + KEY_SUFFIX)
+    def percentage(definition)
+      percentage = get(definition, "percentage") || 0
+      percentage.to_i
     end
   end
 end
