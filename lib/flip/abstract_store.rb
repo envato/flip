@@ -1,12 +1,11 @@
 module Flip
   class AbstractStore
-
-    def get(key)
-      raise
+    def get(definition_key, strategy, param_key)
+      raise NotImplementedError
     end
 
-    def set(key, value)
-      raise
+    def set(definition_key, strategy, param_key, param_value)
+      raise NotImplementedError
     end
   end
 end

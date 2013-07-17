@@ -25,9 +25,5 @@ module Flip
 
     def switch! key, on; raise; end
     def delete! key; raise; end
-
-    def get key; raise; end
-    def set key, value; raise; end
-    def valid_options; raise; end
   end
 end

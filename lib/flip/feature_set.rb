@@ -11,12 +11,13 @@ module Flip
 
     # Sets the default for definitions which fall through the strategies.
     # Accepts boolean or a Proc to be called.
-    attr_writer :default
+    attr_writer :default, :data_store
 
     def initialize
       @definitions = Hash.new { |_, k| raise "No feature declared with key #{k.inspect}" }
       @strategies = Hash.new { |_, k| raise "No strategy named #{k}" }
       @default = false
+      @data_store = nil
     end
 
     # Whether the given feature is switched on.
