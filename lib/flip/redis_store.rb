@@ -8,15 +8,16 @@ module Flip
       @redis = redis
     end
     
-    def get(definition_key, strategy, param_key)
-      safely { @redis.hget([KEY_PREFIX, definition_key, strategy].join("-"), param_key) }
+    def get(definition, strategy, param_key)
+      safely { @redis.hget([KEY_PREFIX, key(definition), strategy].join("-"), param_key) }
     end
 
-    def set(definition_key, strategy, param_key, param_value)
-      safely { @redis.hset([KEY_PREFIX, definition_key, strategy].join("-"), param_key, param_value) }
+    def set(definition, strategy, param_key, param_value)
+      safely { @redis.hset([KEY_PREFIX, key(definition), strategy].join("-"), param_key, param_value) }
     end
 
     private
+
     def safely
       begin
         Timeout.timeout(SAFE_TIMEOUT){
@@ -29,6 +30,11 @@ module Flip
         Rails.logger.warn("Flip redis operation took too long: #{e}")
         nil
       end
+    end
+
+    def key(definition)
+      definition = definition.key unless definition.is_a? Symbol
+      definition.to_s
     end
   end
 end

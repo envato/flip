@@ -12,6 +12,7 @@ module Flip
     # Sets the default for definitions which fall through the strategies.
     # Accepts boolean or a Proc to be called.
     attr_writer :default, :data_store
+    attr_reader :data_store
 
     def initialize
       @definitions = Hash.new { |_, k| raise "No feature declared with key #{k.inspect}" }
