@@ -21,6 +21,7 @@
   facade
   feature_set
   forbidden
+  host_strategy
   redis_store
   redis_strategy
   session_strategy
