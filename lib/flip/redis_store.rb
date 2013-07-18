@@ -19,16 +19,18 @@ module Flip
     private
 
     def safely
-      begin
-        Timeout.timeout(SAFE_TIMEOUT){
-          yield
-        }
-      rescue Redis::BaseError => e
-        Rails.logger.warn("Flip had a problem with redis: #{e}")
-        nil
-      rescue Timeout::Error => e
-        Rails.logger.warn("Flip redis operation took too long: #{e}")
-        nil
+      if defined?(Redis)
+        begin
+          Timeout.timeout(SAFE_TIMEOUT) {
+            yield
+          }
+        rescue Redis::BaseError => e
+          Rails.logger.warn("Flip had a problem with redis: #{e}")
+          nil
+        rescue Timeout::Error => e
+          Rails.logger.warn("Flip redis operation took too long: #{e}")
+          nil
+        end
       end
     end
 
