@@ -24,6 +24,8 @@ module Flip
     private
 
     def within_percentage?(definition, id)
+      return false if id.nil?
+      
       id = "#{definition.to_s}-#{id}".hash
       (id % 100) < percentage(definition)
     end
