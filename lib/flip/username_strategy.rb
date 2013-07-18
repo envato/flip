@@ -18,7 +18,7 @@ module Flip
     # expecting { :username => 'something' }
     #
     def on?(definition, options = {})
-      allowed_usernames(definition).include?(options[:username])
+      options[:username] && allowed_usernames(definition).include?(options[:username])
     end
 
     private
