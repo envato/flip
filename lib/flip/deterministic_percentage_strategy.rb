@@ -24,7 +24,7 @@ module Flip
     private
 
     def within_percentage?(definition, id)
-      pry binding
+      id = "#{definition.to_s}-#{id}".hash
       (id % 100) < percentage(definition)
     end
 
