@@ -21,9 +21,9 @@
   facade
   feature_set
   forbidden
+  global_strategy
   host_strategy
   redis_store
-  redis_strategy
   session_strategy
   username_strategy
 }.each { |name| require "flip/#{name}" }
