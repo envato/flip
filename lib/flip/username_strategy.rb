@@ -7,7 +7,7 @@ module Flip
     end
 
     def knows?(definition, options = {})
-      options[:username] && !allowed_usernames.empty?
+      options[:username] && on?(definition, options)
     end
 
     def valid_options

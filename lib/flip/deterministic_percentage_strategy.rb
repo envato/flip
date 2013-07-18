@@ -7,7 +7,7 @@ module Flip
     end
 
     def knows?(definition, options = {})
-      options[:id] && !percentage(definition).nil?
+      options[:id] && on?(definition, options)
     end
 
     def valid_options
@@ -18,12 +18,13 @@ module Flip
     # expecting { :id => n }
     #
     def on?(definition, options = {})
-      within_percentage(definition, options[:id])
+      within_percentage?(definition, options[:id])
     end
 
     private
 
     def within_percentage?(definition, id)
+      pry binding
       (id % 100) < percentage(definition)
     end
 
