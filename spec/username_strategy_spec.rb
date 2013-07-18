@@ -16,7 +16,6 @@ describe Flip::UsernameStrategy do
 
   describe '#knows?' do
     it 'does not know features without a username' do
-      strategy.stub(:get) { nil }
       strategy.knows?(definition).should be_false
     end
 
