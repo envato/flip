@@ -1,31 +1,13 @@
 module Flip
-  class UsernameStrategy < AbstractStrategy
-    include StrategyPersistence
+  class UsernameStrategy < AbstractValueInListStrategy
 
     def description
       "Enable feature for a list of usernames"
     end
 
-    def knows?(definition, options = {})
-      options[:username] && on?(definition, options)
+    def value_param_name
+      :username
     end
 
-    def valid_options
-      return ['allowed_usernames']
-    end
-
-    #
-    # expecting { :username => 'something' }
-    #
-    def on?(definition, options = {})
-      options[:username] && allowed_usernames(definition).include?(options[:username])
-    end
-
-    private
-
-    def allowed_usernames(definition)
-      names_string = get(definition, "allowed_usernames") || ""
-      names_string.split(/[\s,]+/)
-    end
   end
 end

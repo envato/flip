@@ -11,6 +11,7 @@
   strategy_persistence
   abstract_store
   abstract_strategy
+  abstract_value_in_list_strategy
   controller_filters
   cookie_strategy
   database_strategy
@@ -24,6 +25,7 @@
   global_strategy
   host_strategy
   redis_store
+  role_strategy
   session_strategy
   username_strategy
 }.each { |name| require "flip/#{name}" }
