@@ -24,11 +24,15 @@ module Flip
     # Whether the given feature is switched on.
     def on?(key, options = {})
       d = @definitions[key]
-      if d.custom_logic
-        return CustomLogicProxy.new(@strategies, d, options).on?
+      strats = if d.options[:strategies]
+        required_strats = d.options[:strategies].map(&:to_s)
+        @strategies.select{|k,v| required_strats.include?(k)}
       else
-        @strategies.each_value { |s| return s.on?(d, options) if s.knows?(d, options) }
-      end
+        @strategies
+      end 
+
+      strats.each_value { |s| return s.on?(d, options) if s.knows?(d, options) }
+      return CustomLogicProxy.new(@strategies, d, options).on? if d.options[:fallback]
       default_for d
     end
 
@@ -67,7 +71,7 @@ module Flip
       end
 
       def on?
-        instance_exec(&@definition.custom_logic)
+        instance_exec(&@definition.options[:fallback])
       end
 
       def method_missing(m, *args, &block)

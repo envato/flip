@@ -6,8 +6,8 @@ module Flip
     end
 
     # Adds a new feature definition, creates predicate method.
-    def feature(key, options = {}, &custom_logic)
-      FeatureSet.instance << Flip::Definition.new(key, options, &custom_logic)
+    def feature(key, options = {})
+      FeatureSet.instance << Flip::Definition.new(key, options)
     end
 
     # Adds a strategy for determining feature status.
