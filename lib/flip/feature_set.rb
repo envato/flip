@@ -31,9 +31,10 @@ module Flip
         @strategies
       end 
 
-      strats.each_value { |s| return s.on?(d, options) if s.knows?(d, options) }
-      return CustomLogicProxy.new(@strategies, d, options).on? if d.options[:fallback]
-      default_for d
+      on = strats.each_value.any? { |s| s.knows?(d,options) && s.on?(d, options) }
+      on ||= CustomLogicProxy.new(@strategies, d, options).on? if d.options[:fallback]
+      on ||= default_for d
+      on
     end
 
     # Adds a feature definition to the set.

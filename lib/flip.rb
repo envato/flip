@@ -24,13 +24,12 @@
   forbidden
   global_strategy
   host_strategy
+  middleware
   redis_store
   role_strategy
   session_strategy
   username_strategy
 }.each { |name| require "flip/#{name}" }
-
-require "flip/engine" if defined?(Rails)
 
 module Flip
   extend Facade

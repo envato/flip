@@ -1,6 +1,8 @@
+require 'flip/middleware'
 module Flip
   class HostStrategy < AbstractStrategy
     include StrategyPersistence
+    Flip::Middleware.register self
 
     def description
       "Enable feature for a list of http request hosts"
@@ -18,8 +20,12 @@ module Flip
       allowed_hosts(definition).include?(host)
     end
 
-    def self.host= host
-      @host = host
+    def self.before(req)
+      @host = req.host
+    end
+
+    def self.after(req)
+      @host = nil
     end
 
     private
@@ -30,23 +36,6 @@ module Flip
     def allowed_hosts(definition)
       names_string = get(definition, "allowed_hosts") || ""
       names_string.split(/[\s,]+/)
-    end
-
-    # Include in ApplicationController to push sesion into SessionStrategy.
-    # Users before_filter and after_filter rather than around_filter to
-    # avoid pointlessly adding to stack depth.
-    module Loader
-      extend ActiveSupport::Concern
-      included do
-        before_filter :flip_host_strategy_before
-        after_filter :flip_host_strategy_after
-      end
-      def flip_host_strategy_before
-        HostStrategy.host = request.host
-      end
-      def flip_host_strategy_after
-        HostStrategy.host = nil
-      end
     end
   end
 end
