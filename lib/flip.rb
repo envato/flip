@@ -29,6 +29,7 @@
   role_strategy
   session_strategy
   username_strategy
+  in_memory_store
 }.each { |name| require "flip/#{name}" }
 
 module Flip
