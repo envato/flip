@@ -10,7 +10,7 @@ module Flip
     end
 
     def has_definition?(feature)
-      Featureset.instance.has? feature
+      FeatureSet.instance.has? feature
     end
 
     def method_missing(method, *parameters)
