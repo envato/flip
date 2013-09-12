@@ -37,6 +37,11 @@ module Flip
       on
     end
 
+    # Whether the given feature is defined.
+    def has?(key)
+      @definitions.has_key?(key)
+    end
+
     # Adds a feature definition to the set.
     def << definition
       @definitions[definition.key] = definition

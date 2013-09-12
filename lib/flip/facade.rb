@@ -9,6 +9,10 @@ module Flip
       FeatureSet.reset
     end
 
+    def has_definition?(feature)
+      Featureset.instance.has? feature
+    end
+
     def method_missing(method, *parameters)
       super unless method =~ %r{^(.*)\?$}
       FeatureSet.instance.on? $1.to_sym
