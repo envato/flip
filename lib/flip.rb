@@ -25,6 +25,7 @@
   forbidden
   global_strategy
   host_strategy
+  ip_strategy
   middleware
   redis_store
   role_strategy
