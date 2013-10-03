@@ -26,7 +26,7 @@ module Flip
     def within_percentage?(definition, id)
       return false if id.nil?
       
-      id = "#{definition.to_s}-#{id}".hash
+      id = Flip::DeterministicDigest.digest("#{definition.to_s}-#{id}")
       (id % 100) < percentage(definition)
     end
 

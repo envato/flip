@@ -18,6 +18,7 @@
   declarable
   declaration_strategy
   definition
+  deterministic_digest
   deterministic_percentage_strategy
   facade
   feature_set
