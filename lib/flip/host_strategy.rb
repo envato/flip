@@ -28,9 +28,13 @@ module Flip
       @host = nil
     end
 
+    def self.host
+      @host
+    end
+
     private
     def host
-      self.class.instance_variable_get(:@host)
+      self.class.host
     end
 
     def allowed_hosts(definition)

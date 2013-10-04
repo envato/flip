@@ -2,6 +2,7 @@ require 'flip/middleware'
 module Flip
   class IpStrategy < AbstractStrategy
     include StrategyPersistence
+    include HostSpecificValue
     Flip::Middleware.register self
 
     def description
@@ -41,7 +42,7 @@ module Flip
     end
 
     def percentage(definition)
-      percentage = get(definition, "percentage") || 0
+      percentage = host_value(get(definition, "percentage")) || 0
       percentage.to_i
     end
   end

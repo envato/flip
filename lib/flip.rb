@@ -24,6 +24,7 @@
   feature_set
   forbidden
   global_strategy
+  host_specific_value
   host_strategy
   ip_strategy
   middleware
