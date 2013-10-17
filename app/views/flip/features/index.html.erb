@@ -4,6 +4,7 @@
   <table>
     <thead>
       <th class="name">Feature Name</th>
+      <th class="alias_name">Alias Name</th>
       <th class="description">Description</th>
       <th class="status">Status</th>
       <% @p.strategies.each do |strategy| %>
@@ -21,6 +22,8 @@
     <% @p.definitions.each do |definition| %>
       <tr>
         <td class="name"><%= definition.name %></td>
+
+        <td class="alias_name"><%= definition.alias_name %></td>
 
         <td class="description"><%= definition.description %></td>
 
