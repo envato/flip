@@ -14,7 +14,7 @@ module Flip
     end
 
     def get(definition, strategy, param_key)
-      get_cached if @cache == {}
+      get_cached if @cache.empty?
       @cache[hash_key(definition, strategy, param_key)]
     end
 
