@@ -31,12 +31,7 @@ module Flip
     private
 
     def get_cached
-      safely do
-        if redis_hash = @redis.hgetall(REDIS_HASH_KEY)
-          @cache = redis_hash
-        end
-      end
-      @cache ||= {}
+      @cache = safely { @redis.hgetall(REDIS_HASH_KEY) } || {}
     end
 
     def hash_key(definition, strategy, param_key)
