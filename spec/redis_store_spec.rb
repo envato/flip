@@ -15,7 +15,7 @@ describe Flip::RedisStore do
     store.clear_cache
   end
 
-  descibe "#set" do
+  describe "#set" do
     it "can save and get a flip setting" do
       expect(redis).to receive(:get).and_return(JSON.dump({:flip1 => 'yo'}))
       expect(redis).to receive(:set).with('flip-cache', JSON.dump({'flip1' => 'yo', 'purchase_flow-ip-global' => 20}))
@@ -30,6 +30,12 @@ describe Flip::RedisStore do
   end
 
   describe "#get" do
+    it "returns the expected value from redis" do
+      json = JSON.dump({'purchase_flow-ip-global' => 'true'})
+      expect(redis).to receive(:get).with('flip-cache').and_return(json)
+      expect(store.get(:purchase_flow,'ip','global')).to eq('true')
+    end
+
     it "doesn't raise an error when redis takes too long" do
       expect(redis).to receive(:get) { sleep 10; nil}
       expect { store.get(:purchase_flow, "ip", "global") }.not_to raise_error
