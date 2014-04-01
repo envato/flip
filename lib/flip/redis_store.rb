@@ -1,6 +1,6 @@
 module Flip
   class RedisStore < AbstractStore
-
+    class FlakeyFlipFailure < StandardError; end
     KEY_PREFIX = 'flip'
     SAFE_TIMEOUT = 0.1
 
@@ -20,6 +20,7 @@ module Flip
 
     def set(definition, strategy, param_key, param_value)
       get_cached
+      raise FlakeyFlipFailure.new("Got an empty cache, not overwriting") if @cache == {}
       @cache[hash_key(definition, strategy, param_key)] = param_value
       set_cached
     end
