@@ -29,6 +29,8 @@ module Flip
       set_cached
     end
 
+    private
+
     def get_cached
       safely do
         if redis_hash = @redis.get("#{KEY_PREFIX}-cache")
@@ -46,8 +48,6 @@ module Flip
         @redis.set("#{KEY_PREFIX}-cache", JSON.dump(@cache))
       end
     end
-
-    private
 
     def remove_nil_from_cache
       @cache.delete_if{|k,v| v.nil?}
