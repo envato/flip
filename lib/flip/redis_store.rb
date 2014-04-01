@@ -32,8 +32,8 @@ module Flip
         else
           @cache = {}
         end
-        @cache ||= {}
       end
+      @cache ||= {}
     end
 
     def set_cached
