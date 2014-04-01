@@ -1,7 +1,6 @@
 module Flip
   require 'timeout'
   class RedisStore < AbstractStore
-    class CacheReadFailure < StandardError; end
     REDIS_HASH_KEY = 'flipv2'
     SAFE_TIMEOUT = 0.1
 
