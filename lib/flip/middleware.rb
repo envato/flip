@@ -15,6 +15,7 @@ module Flip
     def call(env)
       req = Rack::Request.new(env)
       self.class.strategies.each{|s| s.before(req) }
+      Flip::FeatureSet.instance.data_store.clear_cache
       begin
         @app.call(env)
       ensure
