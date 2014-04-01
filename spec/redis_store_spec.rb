@@ -9,8 +9,8 @@ describe Flip::RedisStore do
   subject(:store) { Flip::RedisStore.new(redis) }
 
   before do
-    class Redis;end
-    class Redis::BaseError < StandardError; end
+    stub_const("Redis", Class.new)
+    stub_const("Redis::BaseError", StandardError.new)
     store.stub(:logger => logger)
     store.clear_cache
   end
