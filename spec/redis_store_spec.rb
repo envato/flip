@@ -36,20 +36,22 @@ describe Flip::RedisStore do
       expect(store.get(:purchase_flow,'ip','global')).to eq('true')
     end
 
-    it "doesn't raise an error when redis takes too long" do
-      expect(redis).to receive(:get) { sleep 10; nil}
-      expect { store.get(:purchase_flow, "ip", "global") }.not_to raise_error
-    end
+    describe "timeouts" do
+      before do
+        expect(redis).to receive(:get) { sleep 10; nil}
+      end
+      it "doesn't raise an error when redis takes too long" do
+        expect { store.get(:purchase_flow, "ip", "global") }.not_to raise_error
+      end
 
-    it "returns nil when redis takes too long" do
-      expect(redis).to receive(:get) { sleep 10; nil}
-      expect(store.get(:purchase_flow, "ip", "global")).to eq(nil)
-    end
+      it "returns nil when redis takes too long" do
+        expect(store.get(:purchase_flow, "ip", "global")).to eq(nil)
+      end
 
-    it "logs an error when redis takes too long" do
-      expect(redis).to receive(:get) { sleep 10; nil}
-      expect(logger).to receive(:warn).with("Flip redis operation took too long: execution expired")
-      expect(store.get(:purchase_flow, "ip", "global")).to eq(nil)
+      it "logs an error when redis takes too long" do
+        expect(logger).to receive(:warn).with("Flip redis operation took too long: execution expired")
+        expect(store.get(:purchase_flow, "ip", "global")).to eq(nil)
+      end
     end
   end
 
