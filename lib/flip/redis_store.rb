@@ -1,12 +1,16 @@
 module Flip
+  require 'timeout'
   class RedisStore < AbstractStore
     class CacheReadFailure < StandardError; end
     KEY_PREFIX = 'flip'
     SAFE_TIMEOUT = 0.1
 
+    attr :logger
+
     def initialize(redis = Redis.current)
       @redis = redis
       @cache = {}
+      @logger = Rails.logger if defined?(Rails)
     end
 
     def clear_cache
@@ -60,10 +64,10 @@ module Flip
             yield
           }
         rescue Redis::BaseError => e
-          Rails.logger.warn("Flip had a problem with redis: #{e}")
+         logger.warn("Flip had a problem with redis: #{e}")
           nil
         rescue Timeout::Error => e
-          Rails.logger.warn("Flip redis operation took too long: #{e}")
+          logger.warn("Flip redis operation took too long: #{e}")
           nil
         end
       end
