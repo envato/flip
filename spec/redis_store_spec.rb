@@ -37,9 +37,8 @@ describe Flip::RedisStore do
     end
 
     describe "timeouts" do
-      before do
-        expect(redis).to receive(:get) { sleep 10; nil}
-      end
+      before { expect(redis).to receive(:get) { sleep 10; nil} }
+
       it "doesn't raise an error when redis takes too long" do
         expect { store.get(:purchase_flow, "ip", "global") }.not_to raise_error
       end
