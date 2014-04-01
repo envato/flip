@@ -2,7 +2,7 @@ module Flip
   require 'timeout'
   class RedisStore < AbstractStore
     class CacheReadFailure < StandardError; end
-    KEY_PREFIX = 'flip'
+    REDIS_HASH_KEY = 'flipv2'
     SAFE_TIMEOUT = 0.1
 
     attr :logger
@@ -23,34 +23,21 @@ module Flip
     end
 
     def set(definition, strategy, param_key, param_value)
+      safely do
+        @redis.hset(REDIS_HASH_KEY, hash_key(definition, strategy, param_key), param_value)
+      end
       get_cached
-      raise CacheReadFailure.new("Got an empty cache, not overwriting") if @cache.empty?
-      @cache[hash_key(definition, strategy, param_key)] = param_value
-      set_cached
     end
 
     private
 
     def get_cached
       safely do
-        if redis_hash = @redis.get("#{KEY_PREFIX}-cache")
-          @cache = JSON.parse(redis_hash)
-        else
-          @cache = {}
+        if redis_hash = @redis.hgetall(REDIS_HASH_KEY)
+          @cache = redis_hash
         end
       end
       @cache ||= {}
-    end
-
-    def set_cached
-      safely do
-        remove_nil_from_cache
-        @redis.set("#{KEY_PREFIX}-cache", JSON.dump(@cache))
-      end
-    end
-
-    def remove_nil_from_cache
-      @cache.delete_if{|k,v| v.nil?}
     end
 
     def hash_key(definition, strategy, param_key)
