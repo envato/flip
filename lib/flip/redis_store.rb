@@ -2,7 +2,7 @@ module Flip
   require 'timeout'
   class RedisStore < AbstractStore
     REDIS_HASH_KEY = 'flipv2'
-    SAFE_TIMEOUT = 0.1
+    SAFE_TIMEOUT = 0.15
 
     attr :logger
 
