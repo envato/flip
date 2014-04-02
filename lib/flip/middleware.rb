@@ -15,10 +15,19 @@ module Flip
     def call(env)
       req = Rack::Request.new(env)
       self.class.strategies.each{|s| s.before(req) }
+      clear_flip_cache
       begin
         @app.call(env)
       ensure
         self.class.strategies.reverse.each{|s| s.after(req) }
+      end
+    end
+
+    private
+
+    def clear_flip_cache
+      if Flip::FeatureSet.instance.data_store.respond_to?(:clear_cache)
+        Flip::FeatureSet.instance.data_store.clear_cache
       end
     end
   end
