@@ -3,7 +3,7 @@ require "spec_helper"
 describe Flip::SessionStrategy do
 
   let(:definition) { double("definition").tap{ |d| d.stub(:key) { :one } } }
-  let(:session) { stub }
+  let(:session) { double }
   
   subject(:strategy) { Flip::SessionStrategy.new }
 
