@@ -1,9 +1,6 @@
 module Flip
-  require 'timeout'
   class RedisStore < AbstractStore
     REDIS_HASH_KEY = 'flipv2'
-    SAFE_TIMEOUT = 0.15
-
     attr :logger
 
     def initialize(redis = Redis.current)
@@ -41,14 +38,9 @@ module Flip
     def safely
       if defined?(Redis)
         begin
-          Timeout.timeout(SAFE_TIMEOUT) {
-            yield
-          }
+          yield
         rescue Redis::BaseError => e
          logger.warn("Flip had a problem with redis: #{e}")
-          nil
-        rescue Timeout::Error => e
-          logger.warn("Flip redis operation took too long: #{e}")
           nil
         end
       end
