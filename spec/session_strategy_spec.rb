@@ -11,7 +11,7 @@ describe Flip::SessionStrategy do
   its(:description) { should be_present }
 
   before do
-    Flip::SessionStrategy.session = session
+    Flip::SessionStrategy.before(double(:session => session))
   end
 
   describe "#knows?" do
