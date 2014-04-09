@@ -29,7 +29,7 @@ describe Flip::RedisStore do
       expect(store.get(:purchase_flow,'ip','global')).to eq('true')
     end
 
-    describe "timeouts" do
+    describe "errors" do
       before { expect(redis).to receive(:hgetall) { nil} }
 
       it "doesn't raise an error when redis takes too long" do
