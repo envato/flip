@@ -5,7 +5,6 @@ class ControllerWithCookieStrategy
   def self.before_filter(_); end
   def self.after_filter(_); end
   def cookies; []; end
-  include Flip::CookieStrategy::Loader
 end
 
 describe Flip::CookieStrategy do
@@ -67,45 +66,6 @@ describe Flip::CookieStrategy do
       strategy.delete! :one
       strategy.on?(:one).should be_false
       strategy.knows?(:one).should be_false
-    end
-  end
-
-end
-
-describe Flip::CookieStrategy::Loader do
-
-  it "adds filters when included in controller" do
-    ControllerWithoutCookieStrategy.tap do |klass|
-      klass.should_receive(:before_filter).with(:flip_cookie_strategy_before)
-      klass.should_receive(:after_filter).with(:flip_cookie_strategy_after)
-      klass.send :include, Flip::CookieStrategy::Loader
-    end
-  end
-
-  describe "filter methods" do
-    let(:strategy) { Flip::CookieStrategy.new }
-    let(:controller) { ControllerWithCookieStrategy.new }
-    describe "#flip_cookie_strategy_before" do
-      it "passes controller cookies to CookieStrategy" do
-        controller.should_receive(:cookies).and_return(strategy.cookie_name(:test) => "true")
-        expect {
-          controller.flip_cookie_strategy_before
-        }.to change {
-          [ strategy.knows?(:test), strategy.on?(:test) ]
-        }.from([false, false]).to([true, true])
-      end
-    end
-    describe "#flip_cookie_strategy_after" do
-      before do
-        Flip::CookieStrategy.cookies = { strategy.cookie_name(:test) => "true" }
-      end
-      it "passes controller cookies to CookieStrategy" do
-        expect {
-          controller.flip_cookie_strategy_after
-        }.to change {
-          [ strategy.knows?(:test), strategy.on?(:test) ]
-        }.from([true, true]).to([false, false])
-      end
     end
   end
 
