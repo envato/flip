@@ -13,7 +13,18 @@ module Flip
 
     def on?(definition, options = {})
       default = definition.options[:default]
-      default.is_a?(Proc) ? default.call(definition) : default
+
+      if default.is_a?(Proc)
+        if default.arity == 2
+          default.call(definition, options)
+        elsif default.arity == 1
+          default.call(definition)
+        else
+          default.call
+        end
+      else
+        default
+      end
     end
 
   end
