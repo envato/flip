@@ -11,19 +11,35 @@ module Flip
 
     # Sets the default for definitions which fall through the strategies.
     # Accepts boolean or a Proc to be called.
-    attr_writer :default
+    attr_writer :default, :data_store
+    attr_reader :data_store
 
     def initialize
       @definitions = Hash.new { |_, k| raise "No feature declared with key #{k.inspect}" }
       @strategies = Hash.new { |_, k| raise "No strategy named #{k}" }
       @default = false
+      @data_store = nil
     end
 
     # Whether the given feature is switched on.
-    def on? key
+    def on?(key, options = {})
       d = @definitions[key]
-      @strategies.each_value { |s| return s.on?(d) if s.knows?(d) }
-      default_for d
+      strats = if d.options[:strategies]
+        required_strats = d.options[:strategies].map(&:to_s)
+        @strategies.select{|k,v| required_strats.include?(k)}
+      else
+        @strategies
+      end 
+
+      on = strats.each_value.any? { |s| s.knows?(d,options) && s.on?(d, options) }
+      on ||= CustomLogicProxy.new(@strategies, d, options).on? if d.options[:fallback]
+      on ||= default_for d
+      on
+    end
+
+    # Whether the given feature is defined.
+    def has?(key)
+      @definitions.has_key?(key)
     end
 
     # Adds a feature definition to the set.
@@ -51,6 +67,31 @@ module Flip
 
     def strategies
       @strategies.values
+    end
+
+    class CustomLogicProxy
+      def initialize(strategies, definition, options)
+        @strategies = strategies
+        @definition = definition
+        @options = options
+      end
+
+      def on?
+        instance_exec(&@definition.options[:fallback])
+      end
+
+      def method_missing(m, *args, &block)
+        nice_name = m.to_s
+        if nice_name =~ /\?$/
+          nice_name = nice_name.gsub(/\?$/,'')
+          if @strategies.has_key? nice_name
+            strat = @strategies[nice_name]
+            return strat.on?(@definition, @options)
+          end
+        end
+        super(m, args, &block)
+      end
+
     end
 
   end

@@ -20,5 +20,9 @@ module Flip
       FeatureSet.instance.default = default
     end
 
+    def data_store(data_store)
+      FeatureSet.instance.data_store = data_store
+    end
+
   end
 end

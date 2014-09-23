@@ -1,12 +1,12 @@
 require "spec_helper"
 
 class NullStrategy < Flip::AbstractStrategy
-  def knows?(d); false; end
+  def knows?(d, options = {}); false; end
 end
 
 class TrueStrategy < Flip::AbstractStrategy
-  def knows?(d); true; end
-  def on?(d); true; end
+  def knows?(d, options = {}); true; end
+  def on?(d, options = {}); true; end
 end
 
 describe Flip::FeatureSet do
@@ -61,6 +61,26 @@ describe Flip::FeatureSet do
     subject { feature_set_with_null_then_true_strategies }
     it "returns true due to second strategy" do
       subject.on?(:feature).should be_true
+    end
+  end
+
+  describe '.has?' do
+    subject(:feature_set) { Flip::FeatureSet.new }
+    
+    context 'has key super_sweet_feature' do
+      before do
+        feature_set << double(:key => :super_sweet_feature)
+      end
+
+      it 'should have the feature' do
+        feature_set.has?(:super_sweet_feature).should be_true
+      end
+    end
+
+    context 'doesnt has key super_sweet_feature' do
+      it 'should have the feature' do
+        feature_set.has?(:super_sweet_feature).should be_false
+      end
     end
   end
 

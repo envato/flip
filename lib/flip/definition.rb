@@ -17,5 +17,9 @@ module Flip
       options[:description]
     end
 
+    def alias_name
+      options[:alias_name]
+    end
+
   end
 end

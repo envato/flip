@@ -1,12 +1,16 @@
 module Flip
   module Facade
 
-    def on?(feature)
-      FeatureSet.instance.on? feature
+    def on?(feature, options = {})
+      FeatureSet.instance.on? feature, options
     end
 
     def reset
       FeatureSet.reset
+    end
+
+    def has_definition?(feature)
+      FeatureSet.instance.has? feature
     end
 
     def method_missing(method, *parameters)

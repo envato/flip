@@ -8,19 +8,32 @@
 
 # Flip files.
 %w{
+  strategy_persistence
+  abstract_store
   abstract_strategy
+  abstract_value_in_list_strategy
   controller_filters
   cookie_strategy
   database_strategy
   declarable
   declaration_strategy
   definition
+  deterministic_digest
+  deterministic_percentage_strategy
   facade
   feature_set
   forbidden
+  global_strategy
+  host_specific_value
+  host_strategy
+  ip_strategy
+  middleware
+  redis_store
+  role_strategy
+  session_strategy
+  username_strategy
+  in_memory_store
 }.each { |name| require "flip/#{name}" }
-
-require "flip/engine" if defined?(Rails)
 
 module Flip
   extend Facade
