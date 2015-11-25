@@ -29,10 +29,9 @@ module Flip
         @strategies.select{|k,v| required_strats.include?(k)}
       else
         @strategies
-      end 
+      end
 
       on = strats.each_value.any? { |s| s.knows?(d,options) && s.on?(d, options) }
-      on ||= CustomLogicProxy.new(@strategies, d, options).on? if d.options[:fallback]
       on ||= default_for d
       on
     end
@@ -68,31 +67,5 @@ module Flip
     def strategies
       @strategies.values
     end
-
-    class CustomLogicProxy
-      def initialize(strategies, definition, options)
-        @strategies = strategies
-        @definition = definition
-        @options = options
-      end
-
-      def on?
-        instance_exec(&@definition.options[:fallback])
-      end
-
-      def method_missing(m, *args, &block)
-        nice_name = m.to_s
-        if nice_name =~ /\?$/
-          nice_name = nice_name.gsub(/\?$/,'')
-          if @strategies.has_key? nice_name
-            strat = @strategies[nice_name]
-            return strat.on?(@definition, @options)
-          end
-        end
-        super(m, args, &block)
-      end
-
-    end
-
   end
 end
