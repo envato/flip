@@ -23,18 +23,26 @@ module Flip
 
     # Whether the given feature is switched on.
     def on?(key, options = {})
-      d = @definitions[key]
-      strats = if d.options[:strategies]
-        required_strats = d.options[:strategies].map(&:to_s)
-        @strategies.select{|k,v| required_strats.include?(k)}
-      else
-        @strategies
-      end 
+      definition = @definitions[key]
 
-      on = strats.each_value.any? { |s| s.knows?(d,options) && s.on?(d, options) }
-      on ||= CustomLogicProxy.new(@strategies, d, options).on? if d.options[:fallback]
-      on ||= default_for d
-      on
+      strategies = if definition.options[:strategies]
+        definition_strategies = definition.options[:strategies].map(&:to_s)
+        @strategies.values_at(*definition_strategies)
+      else
+        @strategies.values
+      end
+
+      knowing_strategies = strategies.select do |strategy|
+        strategy.knows?(definition, options)
+      end
+
+      if knowing_strategies.any?
+        knowing_strategies.any? do |strategy|
+          strategy.on?(definition, options)
+        end
+      else
+        default_for(definition, options)
+      end
     end
 
     # Whether the given feature is defined.
@@ -57,8 +65,24 @@ module Flip
       @strategies[klass]
     end
 
-    def default_for(definition)
-      @default.is_a?(Proc) ? @default.call(definition) : @default
+    def default_for(definition, options)
+      if definition.options.include? :default
+        default = definition.options[:default]
+      else
+        default = @default
+      end
+
+      if default.is_a? Proc
+        if default.arity == 2
+          default.call(definition, options)
+        elsif default.arity == 1
+          default.call(definition)
+        else
+          default.call
+        end
+      else
+        default
+      end
     end
 
     def definitions
@@ -68,31 +92,5 @@ module Flip
     def strategies
       @strategies.values
     end
-
-    class CustomLogicProxy
-      def initialize(strategies, definition, options)
-        @strategies = strategies
-        @definition = definition
-        @options = options
-      end
-
-      def on?
-        instance_exec(&@definition.options[:fallback])
-      end
-
-      def method_missing(m, *args, &block)
-        nice_name = m.to_s
-        if nice_name =~ /\?$/
-          nice_name = nice_name.gsub(/\?$/,'')
-          if @strategies.has_key? nice_name
-            strat = @strategies[nice_name]
-            return strat.on?(@definition, @options)
-          end
-        end
-        super(m, args, &block)
-      end
-
-    end
-
   end
 end
