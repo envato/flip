@@ -23,17 +23,26 @@ module Flip
 
     # Whether the given feature is switched on.
     def on?(key, options = {})
-      d = @definitions[key]
-      strats = if d.options[:strategies]
-        required_strats = d.options[:strategies].map(&:to_s)
-        @strategies.select{|k,v| required_strats.include?(k)}
+      definition = @definitions[key]
+
+      strategies = if definition.options[:strategies]
+        definition_strategies = definition.options[:strategies].map(&:to_s)
+        @strategies.values_at(*definition_strategies)
       else
-        @strategies
+        @strategies.values
       end
 
-      on = strats.each_value.any? { |s| s.knows?(d,options) && s.on?(d, options) }
-      on ||= default_for d
-      on
+      knowing_strategies = strategies.select do |strategy|
+        strategy.knows?(definition, options)
+      end
+
+      if knowing_strategies.any?
+        knowing_strategies.any? do |strategy|
+          strategy.on?(definition, options)
+        end
+      else
+        default_for(definition)
+      end
     end
 
     # Whether the given feature is defined.

@@ -9,8 +9,12 @@ class TrueStrategy < Flip::AbstractStrategy
   def on?(d, options = {}); true; end
 end
 
-describe Flip::FeatureSet do
+class FalseStrategy < Flip::AbstractStrategy
+  def knows?(d, options = {}); true; end
+  def on?(d, options = {}); false; end
+end
 
+describe Flip::FeatureSet do
   let :feature_set_with_null_strategy do
     Flip::FeatureSet.new.tap do |s|
       s << Flip::Definition.new(:feature)
@@ -24,15 +28,23 @@ describe Flip::FeatureSet do
     end
   end
 
+  let :feature_set_with_null_then_false_strategies do
+    feature_set_with_null_strategy.tap do |s|
+      s.add_strategy FalseStrategy
+    end
+  end
+
   describe ".instance" do
     it "returns a singleton instance" do
       Flip::FeatureSet.instance.should equal(Flip::FeatureSet.instance)
     end
+
     it "can be reset" do
       instance_before_reset = Flip::FeatureSet.instance
       Flip::FeatureSet.reset
       Flip::FeatureSet.instance.should_not equal(instance_before_reset)
     end
+
     it "can be reset multiple times without error" do
       2.times { Flip::FeatureSet.reset }
     end
@@ -40,17 +52,21 @@ describe Flip::FeatureSet do
 
   describe "#default= and #on? with null strategy" do
     subject { feature_set_with_null_strategy }
+
     it "defaults to false" do
       subject.on?(:feature).should be_false
     end
+
     it "can default to true" do
       subject.default = true
       subject.on?(:feature).should be_true
     end
+
     it "accepts a proc returning true" do
       subject.default = proc { true }
       subject.on?(:feature).should be_true
     end
+
     it "accepts a proc returning false" do
       subject.default = proc { false }
       subject.on?(:feature).should be_false
@@ -59,14 +75,31 @@ describe Flip::FeatureSet do
 
   describe "feature set with null strategy then always-true strategy" do
     subject { feature_set_with_null_then_true_strategies }
+
     it "returns true due to second strategy" do
       subject.on?(:feature).should be_true
     end
   end
 
+  describe "feature set with always-false strategy" do
+    subject { feature_set_with_null_then_false_strategies }
+
+    it "returns false due to second strategy" do
+      subject.on?(:feature).should be_false
+    end
+
+    context "and default true" do
+      before { subject.default = true }
+
+      it "retuns false due to second strategy" do
+        subject.on?(:feature).should be_false
+      end
+    end
+  end
+
   describe '.has?' do
     subject(:feature_set) { Flip::FeatureSet.new }
-    
+
     context 'has key super_sweet_feature' do
       before do
         feature_set << double(:key => :super_sweet_feature)
@@ -83,5 +116,4 @@ describe Flip::FeatureSet do
       end
     end
   end
-
 end
