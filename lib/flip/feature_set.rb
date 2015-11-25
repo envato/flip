@@ -41,7 +41,7 @@ module Flip
           strategy.on?(definition, options)
         end
       else
-        default_for(definition)
+        default_for(definition, options)
       end
     end
 
@@ -65,8 +65,24 @@ module Flip
       @strategies[klass]
     end
 
-    def default_for(definition)
-      @default.is_a?(Proc) ? @default.call(definition) : @default
+    def default_for(definition, options)
+      if definition.options.include? :default
+        default = definition.options[:default]
+      else
+        default = @default
+      end
+
+      if default.is_a? Proc
+        if default.arity == 2
+          default.call(definition, options)
+        elsif default.arity == 1
+          default.call(definition)
+        else
+          default.call
+        end
+      else
+        default
+      end
     end
 
     def definitions
