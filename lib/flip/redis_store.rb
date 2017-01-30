@@ -25,6 +25,18 @@ module Flip
       get_cached
     end
 
+    def cleanup_unused_keys(feature_set = Flip::FeatureSet.instance)
+      existing_keys = feature_set.definitions.map(&:key)
+      existing_strategies = feature_set.strategies.map(&:name)
+      possible_combinations = existing_keys.product(existing_strategies)
+      possible_prefixes = possible_combinations.map { |key, strat| "#{key}-#{strat}" }
+      get_cached if @cache.empty?
+      @cache.keys.each do |key|
+        outdated = possible_prefixes.none? { |prefix| key.starts_with?(prefix) }
+        safely { @redis.hdel(REDIS_HASH_KEY, key) } if outdated
+      end
+    end
+
     private
 
     def get_cached
