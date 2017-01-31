@@ -31,10 +31,13 @@ module Flip
       possible_combinations = existing_keys.product(existing_strategies)
       possible_prefixes = possible_combinations.map { |key, strat| "#{key}-#{strat}" }
       get_cached if @cache.empty?
-      @cache.keys.each do |key|
-        outdated = possible_prefixes.none? { |prefix| key.starts_with?(prefix) }
-        safely { @redis.hdel(REDIS_HASH_KEY, key) } if outdated
-      end
+      @cache.keys.map { |key|
+        outdated = possible_prefixes.none? { |prefix| key.start_with?(prefix) }
+        if outdated
+          safely { @redis.hdel(REDIS_HASH_KEY, key) }
+          key
+        end
+      }.compact
     end
 
     private

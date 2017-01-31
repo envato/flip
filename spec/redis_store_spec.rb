@@ -54,4 +54,40 @@ describe Flip::RedisStore do
       expect(store.get(:purchase_flow, "ip", "global")).to eq(20)
     end
   end
+
+  describe "#cleanup_unused_keys" do
+    before do
+      expect(redis).to receive(:hgetall).with('flipv2').and_return({
+        'feature1-strategy1-value' => 'true',
+        'feature2-strategy1-value' => 'true',
+        'feature1-strategy2-value' => 'false',
+        'notafeature-strategy1-value' => 'false',
+        'feature1-notastrategy-value' => 'false'
+      })
+    end
+
+    let(:strategies) do
+      [
+        double(Flip::AbstractStrategy, :name => 'strategy1'),
+        double(Flip::AbstractStrategy, :name => 'strategy2')
+      ]
+    end
+
+    let(:features) do
+      [
+        double(Flip::Definition, :key => :feature1),
+        double(Flip::Definition, :key => :feature2)
+      ]
+    end
+
+    let(:feature_set) do
+      double(Flip::FeatureSet, :strategies => strategies, :definitions => features)
+    end
+
+    it "deletes redis entries for removed features/strategies" do
+      expect(redis).to receive(:hdel).with('flipv2', 'notafeature-strategy1-value')
+      expect(redis).to receive(:hdel).with('flipv2', 'feature1-notastrategy-value')
+      store.cleanup_unused_keys(feature_set)
+    end
+  end
 end
