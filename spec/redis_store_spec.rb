@@ -55,7 +55,7 @@ describe Flip::RedisStore do
     end
   end
 
-  describe "#cleanup_unused_keys" do
+  describe "#cleanup_disused_keys" do
     before do
       expect(redis).to receive(:hgetall).with('flipv2').and_return({
         'feature1-strategy1-value' => 'true',
@@ -87,7 +87,7 @@ describe Flip::RedisStore do
     it "deletes redis entries for removed features/strategies" do
       expect(redis).to receive(:hdel).with('flipv2', 'notafeature-strategy1-value')
       expect(redis).to receive(:hdel).with('flipv2', 'feature1-notastrategy-value')
-      store.cleanup_unused_keys(feature_set)
+      store.cleanup_disused_keys(feature_set)
     end
   end
 end

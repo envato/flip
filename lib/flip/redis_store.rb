@@ -25,7 +25,7 @@ module Flip
       get_cached
     end
 
-    def cleanup_unused_keys(feature_set = Flip::FeatureSet.instance)
+    def cleanup_disused_keys(feature_set = Flip::FeatureSet.instance)
       existing_keys = feature_set.definitions.map(&:key)
       existing_strategies = feature_set.strategies.map(&:name)
       possible_combinations = existing_keys.product(existing_strategies)
