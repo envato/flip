@@ -26,9 +26,7 @@ module Flip
     private
 
     def clear_flip_cache
-      if Flip::FeatureSet.instance.data_store.respond_to?(:clear_cache)
-        Flip::FeatureSet.instance.data_store.clear_cache
-      end
+      Flip::FeatureSet.instance.data_store.clear_cache
     end
   end
 end
