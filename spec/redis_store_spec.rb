@@ -10,7 +10,7 @@ describe Flip::RedisStore do
 
   before do
     stub_const("Redis", Class.new)
-    stub_const("Redis::BaseError", StandardError.new)
+    stub_const("Redis::BaseError", StandardError)
     store.stub(:logger => logger)
     store.clear_cache
   end
