@@ -56,7 +56,7 @@ module Flip
         begin
           yield
         rescue Redis::BaseError => e
-         logger.warn("Flip had a problem with redis: #{e}")
+          logger.warn("Flip had a problem with redis: #{e}")
           nil
         end
       end
