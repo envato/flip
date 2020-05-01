@@ -3,10 +3,11 @@ module Flip
     REDIS_HASH_KEY = 'flipv2'
     attr :logger
 
-    def initialize(redis = Redis.current)
+    def initialize(redis: Redis.current, redis_hash_key: REDIS_HASH_KEY)
       @redis = redis
       @cache = {}
       @logger = Rails.logger if defined?(Rails)
+      @redis_hash_key = redis_hash_key
     end
 
     def clear_cache
@@ -20,7 +21,7 @@ module Flip
 
     def set(definition, strategy, param_key, param_value)
       safely do
-        @redis.hset(REDIS_HASH_KEY, hash_key(definition, strategy, param_key), param_value)
+        @redis.hset(@redis_hash_key, hash_key(definition, strategy, param_key), param_value)
       end
       get_cached
     end
@@ -34,7 +35,7 @@ module Flip
       @cache.keys.map { |key|
         outdated = possible_prefixes.none? { |prefix| key.start_with?(prefix) }
         if outdated
-          safely { @redis.hdel(REDIS_HASH_KEY, key) }
+          safely { @redis.hdel(@redis_hash_key, key) }
           key
         end
       }.compact
@@ -43,7 +44,7 @@ module Flip
     private
 
     def get_cached
-      @cache = safely { @redis.hgetall(REDIS_HASH_KEY) } || {}
+      @cache = safely { @redis.hgetall(@redis_hash_key) } || {}
     end
 
     def hash_key(definition, strategy, param_key)
