@@ -6,11 +6,11 @@ describe Flip::RedisStore do
   let(:redis) { double }
   let(:logger) { double(:warn => nil) }
 
-  subject(:store) { Flip::RedisStore.new(redis) }
+  subject(:store) { Flip::RedisStore.new(redis: redis) }
 
   before do
     stub_const("Redis", Class.new)
-    stub_const("Redis::BaseError", StandardError.new)
+    stub_const("Redis::BaseError", RuntimeError)
     store.stub(:logger => logger)
     store.clear_cache
   end
@@ -21,12 +21,31 @@ describe Flip::RedisStore do
       expect(redis).to receive(:hset).with('flipv2', 'purchase_flow-ip-global', 20)
       store.set(:purchase_flow, "ip", "global", 20)
     end
+
+    context "with a different redis hash key" do
+      subject(:store) { Flip::RedisStore.new(redis: redis, redis_hash_key: 'outage') }
+
+      it "uses the passed in key" do
+        expect(redis).to receive(:hgetall).and_return({})
+        expect(redis).to receive(:hset).with('outage', 'purchase_flow-ip-global', 20)
+        store.set(:purchase_flow, "ip", "global", 20)
+      end
+    end
   end
 
   describe "#get" do
     it "returns the expected value from redis" do
       expect(redis).to receive(:hgetall).with('flipv2').and_return({'purchase_flow-ip-global' => 'true'})
       expect(store.get(:purchase_flow,'ip','global')).to eq('true')
+    end
+
+    context "with a different redis hash key" do
+      subject(:store) { Flip::RedisStore.new(redis: redis, redis_hash_key: 'outage') }
+
+      it "uses the passed in key" do
+        expect(redis).to receive(:hgetall).with('outage').and_return({'purchase_flow-ip-global' => 'true'})
+        expect(store.get(:purchase_flow,'ip','global')).to eq('true')
+      end
     end
 
     describe "errors" do
@@ -52,6 +71,21 @@ describe Flip::RedisStore do
 
       expect(redis).to receive(:hgetall).with('flipv2').and_return({'purchase_flow-ip-global' => 20})
       expect(store.get(:purchase_flow, "ip", "global")).to eq(20)
+    end
+
+    context "with a different redis hash key" do
+      subject(:store) { Flip::RedisStore.new(redis: redis, redis_hash_key: 'outage') }
+
+      it "persists after the cache is cleared" do
+        expect(redis).to receive(:hgetall).and_return({})
+        expect(redis).to receive(:hset).with('outage','purchase_flow-ip-global',20)
+
+        store.set(:purchase_flow, "ip", "global", 20)
+        store.clear_cache
+
+        expect(redis).to receive(:hgetall).with('outage').and_return({'purchase_flow-ip-global' => 20})
+        expect(store.get(:purchase_flow, "ip", "global")).to eq(20)
+      end
     end
   end
 
