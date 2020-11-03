@@ -12,8 +12,9 @@ module Flip
     end
 
     private
+
     def data_store
-      FeatureSet.instance.data_store
+      feature_set.data_store
     end
   end
 end

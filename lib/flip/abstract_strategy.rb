@@ -1,5 +1,10 @@
 module Flip
   class AbstractStrategy
+    attr_reader :feature_set
+
+    def initialize(feature_set: nil)
+      @feature_set = feature_set
+    end
 
     def name
       self.class.name.split("::").last.gsub(/Strategy$/, "").underscore
