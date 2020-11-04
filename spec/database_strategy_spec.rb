@@ -3,7 +3,7 @@ require "spec_helper"
 describe Flip::DatabaseStrategy do
 
   let(:definition) { double("definition").tap{ |d| d.stub(:key) { :one } } }
-  let(:strategy) { Flip::DatabaseStrategy.new(model_klass) }
+  let(:strategy) { Flip::DatabaseStrategy.new(model_klass: model_klass) }
   let(:model_klass) do
     Class.new do
       extend Flip::Declarable
