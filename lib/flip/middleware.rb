@@ -8,8 +8,9 @@ module Flip
       end
     end
 
-    def initialize(app)
+    def initialize(app, feature_set_classes: [FeatureSet])
       @app = app
+      @feature_set_classes = feature_set_classes
     end
 
     def call(env)
@@ -26,7 +27,9 @@ module Flip
     private
 
     def clear_flip_cache
-      Flip::FeatureSet.instance.data_store.clear_cache
+      @feature_set_classes.each do |feature_set_class|
+        feature_set_class.instance.data_store.clear_cache
+      end
     end
   end
 end
